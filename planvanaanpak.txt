@@ -1,0 +1,19 @@
+Interface
+
+User input = (lap tekst, (contextHuidig, contextNieuw))
+-> Content Translator
+	vervangt elk woord OF vervangt alleen nouns?
+		zou alleen woorden moeten vervangen die context specifiek zijn
+	woorden onbekend voor word2vec :
+		wordnet	<- (target, context) geeft semantiek / lijst met synoniemen
+			vervang target met een synoniem bekend in word2vec
+			word2vec kent geen enkele synoniem -> pak hypernym
+			repeat
+		wordnet kent target woord niet :
+			voorlopig niet vervangen
+			predictive model?
+			TODO
+
+
+hoofdletters
+woorden als can't vs cannot vs can not
