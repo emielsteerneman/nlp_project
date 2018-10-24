@@ -5,4 +5,5 @@ pickle.obj
 simplenlg/
 *save
 nlpJava/out/
-nlpJava/.idea/
+nlpJava/.idea/*
+__pycache__/

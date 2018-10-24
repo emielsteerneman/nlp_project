@@ -18,8 +18,8 @@ public class Main {
         NLGElement NP, VP, VP1, PP;
         NP = nlgFactory.createNounPhrase("man");
         ((NPPhraseSpec) NP).setDeterminer("the");
-        ((NPPhraseSpec) NP).addModifier("drunken");
-        ((NPPhraseSpec) NP).addModifier("floridian");
+        ((NPPhraseSpec) NP).addPreModifier("drunken");
+        ((NPPhraseSpec) NP).addPreModifier("floridian");
         PP = nlgFactory.createPrepositionPhrase("into the store");
         VP = nlgFactory.createVerbPhrase("carrying");
         ((VPPhraseSpec) VP).setObject("alligator");
