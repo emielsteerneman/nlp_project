@@ -29,7 +29,7 @@ else:
 	word_vectors = KeyedVectors.load_word2vec_format(datapath(path), binary=True)
 	print("Writing pickle..")
 	filehandler = open(picklePath, 'wb')			# Open file handler
-	pickle.dump(word_vectors, filehandler, pickle.HIGHEST_PROTOCOL)		# Dump vector into file
+	pickle.Dump(word_vectors, filehandler, pickle.HIGHEST_PROTOCOL)		# Dump vector into file
 ### ### ### ### ### ### ### ### ### ### ### ### 
 
 spellCheck = language_check.LanguageTool('en-GB')

@@ -7,6 +7,8 @@ from nltk.parse.stanford import StanfordDependencyParser
 from nltk.corpus import treebank
 import re
 import datetime
+import numpy as np
+import pickle
 
 def my_tokenize(sentence):
 	return re.findall(r'([a-zA-Z0-9’]+|[,;])', sentence)
@@ -22,72 +24,112 @@ def f(word_vectors, dependency_parser, wnl):
 		"Florida Man causes $100k in damage to Walmart liquor store under construction with hotwired forklift. gives police his name as Alice Wonderland and says a hookah-smoking caterpillar told him to do it.",
 		"Florida Man goes fishing and catches a kilo of marijuana. Calls it an early birthday gift from Pablo Escobar",
 		"Florida man robs bank, strips naked, then runs down the street throwing stolen money everywhere.",
-		"Florida Man who is a convicted felon honks horn at cops working an accident. Has numerous drugs and weapons in his car in plain sight."
+		"Florida Man who is a convicted felon honks horn at cops working an accident. Has numerous drugs and weapons in his car in plain sight.",
+		"Florida Man bites off neighbor's ear because he wouldn't give him a cigarette.",
+		"Florida Man pokes girlfriend in the eye after she served him waffles instead of pancakes.",
+		"Florida Man, once arrested for fighting drag queen with a tiki torch while dressed like KKK member, now running for mayor.",
+		"Florida Man claiming to be Teddy Roosevelt's relative banned from Holiday Inn after threatening to hit manager."
 	]
+	allStats = []
 
 	userInputContextIn = "Florida"
-	userInputContextOut = "Canada"
 
+	### Create filenames for output text and stats
 	dateStr = datetime.datetime.now().strftime("%Y_%b_%d-%H_%M")
-	with open('output_' + dateStr + '.txt', 'w') as file:
+	filePrefix = "outputs/output_test_"
+	filenameText = filePrefix + dateStr + ".txt"
+	filenameStats =  filePrefix + dateStr + ".pickle"
+
+	# Open file for output text
+	with open(filenameText, 'w') as file:
+		# For each input string
 		for inputStr in userInputStrings:
 			file.write(inputStr)
 			print(inputStr)
 			print()
-			for cOut in "India Mexico Canada Netherlands Holland France Germany Texas Nevada".split():
-				output = changeContext(word_vectors, dependency_parser, wnl, inputStr, userInputContextIn, cOut)
+			# For each of these contexts out
+			for cOut in "India Africa Mexico Canada Netherlands Holland France Germany Texas Nevada Alabama Alaska Arizona Arkansas California Colorado".split():
+				output, stats = changeContext(word_vectors, dependency_parser, wnl, inputStr, userInputContextIn, cOut)
+				allStats += stats
+
 				print(cOut)
 				print(output)
-				print("\n")
-				file.write("\n")
+
+				# Write context and text to output file
+				file.write("\n\n")
 				file.write(cOut)
 				file.write("\n")
 				file.write(output)
 			file.write("\n\n\n")
 	file.close()
 
+	# Write statics to pickle for statsAnalyzer.py
+	with open(filenameStats, 'wb') as file:
+		pickle.dump(allStats, file)
+	file.close()
+
 
 def changeContext(word_vectors, dependency_parser, wnl, input, cIn, cOut):
+	# To store:
+	# context in, context out, word in, lemma, label in, word out, score
+
+	# Hold the statistics for each conversion
+	stats = []
+	# Lookup tables to store context mappings
+	lookup = {}
+	lookup_rejection = []
+
 	# Tokenize input
 	text_dep = [my_tokenize(sentence.lower()) for sentence in sent_tokenize(input)]
 	# Tokens => Parse tree
 	parse = dependency_parser.parse_sents(text_dep)
 
-	# Lookup table to store context mappings
-	lookup = {}
-	lookup_rejection = []
-
-	for tree in parse:
-		for dependency_sentence in tree:
-			for dependency in dependency_sentence.triples():
-				for word, label in [dependency[0], dependency[2]]:
-
+	for tree in parse: # For each [sentence-tree]
+		for dependency_sentence in tree: # For sentence-tree (no idea why sentence is wrapped)
+			for dependency in dependency_sentence.triples(): # For each dependency in sentence-tree
+				for word, label in [dependency[0], dependency[2]]: # For each (word, label) in dependency
+					### Convert word to lemma if possible
 					lemma = word
 					try:
 						lemma = wnl.lemmatize(word, label[0].lower())
-						print(word, "=>", lemma)
 					except Exception as e:
-						# print("Error:", e)
 						pass
 
-					if label in ["NN", "NNP"]:
+					# Only convert words if it has one of the following labels
+					if label in ["NN", "NNP", "VB"]:
+						# Check if word has been converted before
 						wordT = lookup.get(lemma)
+						# If not, convert it
 						if wordT is None:
 							try:
+								# Find best match
 								results = word_vectors.most_similar(positive=[lemma, cOut.strip()], negative=[cIn.strip()])
+								# Replace underscores with whitespaces
 								wordT = results[0][0].replace("_", " ")
-								if(0.4 <= results[0][1]):
+								score = results[0][1]
+								# Store stats
+								stats.append([cIn, cOut, word, lemma, label, wordT, score])
+								# Threshold score
+								if(0.4 <= score):
 									lookup[lemma] = wordT
-									print("      ", lemma.ljust(15), "=>", wordT.ljust(15), results[0][1])
+									print("      ", lemma.ljust(15), "=>", wordT.ljust(15), score)
 								elif lemma not in lookup_rejection:
 									lookup_rejection.append(lemma)
-									print("REJECT", lemma.ljust(15), "=>", wordT.ljust(15), results[0][1])
+									print("REJECT", lemma.ljust(15), "=>", wordT.ljust(15), score)
+
+							# Catch word-not-in-vocabulary error
 							except Exception as e:
 								print("Error:", e)
-	output = []
-	for sentence in text_dep:
-		newSentence = [lookup.get(word) or word for word in sentence]
-		sentence = " ".join(newSentence) + "."
-		output.append(sentence)
 	
-	return " ".join(output)
+	### Rebuild sentence by replacing words with their mappings
+	output = []
+	# For each sentence in text
+	for sentence in text_dep:
+		# Replace words if possible
+		newSentence = [lookup.get(word) or word for word in sentence]
+		# Join words with space, add punctuation mark
+		sentence = " ".join(newSentence) + "."
+		# Add sentence to text
+		output.append(sentence)
+	# Join sentences with space
+	return " ".join(output), stats

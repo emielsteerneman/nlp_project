@@ -7,3 +7,4 @@ simplenlg/
 nlpJava/out/
 nlpJava/.idea/*
 __pycache__/
+outputs/
