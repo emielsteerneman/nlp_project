@@ -35,7 +35,8 @@ else:
 spellCheck = language_check.LanguageTool('en-GB')
 wnl = nltk.WordNetLemmatizer()
 
-dependency_parser = StanfordDependencyParser(path_to_jar="/nlp/stanford-parser-full-2018-02-27/stanford-parser.jar", path_to_models_jar="/nlp/stanford-parser-full-2018-02-27/english.jar")
+# dependency_parser = StanfordDependencyParser(path_to_jar="./stanford-parser-full-2018-02-27/stanford-parser.jar", path_to_models_jar="./stanford-parser-full-2018-02-27/english.jar")
+dependency_parser = StanfordDependencyParser(path_to_jar="./stanford-parser-full-2018-02-27/stanford-parser.jar", path_to_models_jar="./stanford-parser-full-2018-02-27/english.jar")
 
 while True:
 	try:
