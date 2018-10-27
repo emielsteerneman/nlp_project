@@ -1,10 +1,5 @@
-from gensim.test.utils import datapath
-from gensim.models import KeyedVectors
 import language_check
-import nltk, re, pprint
-from nltk import word_tokenize, sent_tokenize
-from nltk.parse.stanford import StanfordDependencyParser
-from nltk.corpus import treebank
+from nltk import sent_tokenize
 import re
 import datetime
 import numpy as np

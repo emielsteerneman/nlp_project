@@ -2,16 +2,12 @@ print("Starting up...")
 
 from gensim.test.utils import datapath
 from gensim.models import KeyedVectors
-import language_check
-import nltk, re, pprint
-from nltk import word_tokenize, sent_tokenize
+import nltk
 from nltk.parse.stanford import StanfordDependencyParser
-from nltk.corpus import treebank
 
 from importlib import reload
 import os.path
 import pickle
-import time
 
 import dynamicCode
 
@@ -32,7 +28,6 @@ else:
 	pickle.dump(word_vectors, filehandler, pickle.HIGHEST_PROTOCOL)		# Dump vector into file
 ### ### ### ### ### ### ### ### ### ### ### ### 
 
-spellCheck = language_check.LanguageTool('en-GB')
 wnl = nltk.WordNetLemmatizer()
 
 # dependency_parser = StanfordDependencyParser(path_to_jar="./stanford-parser-full-2018-02-27/stanford-parser.jar", path_to_models_jar="./stanford-parser-full-2018-02-27/english.jar")

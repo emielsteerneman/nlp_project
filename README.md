@@ -4,6 +4,6 @@ Link directly to the .zip file: https://nlp.stanford.edu/software/stanford-parse
 
 This project makes use of gensim : pip install gensim
 
-This project makes use of nltk : pip install nltk
+This project makes use of nltk https://www.nltk.org/ : pip install nltk
 
 This project makes use of the Word2Vec model, which can be downloaded here: https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing
