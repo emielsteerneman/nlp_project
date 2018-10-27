@@ -48,15 +48,15 @@ print("Min ", minScore(unique_stats))
 print("Mean", np.mean([stat[6] for stat in unique_stats]))
 
 ### Create bar plot with 100 containers
-# barData = np.zeros(50)
-# for stat in unique_stats:
-# 	barData[int(stat[6] * len(barData))] += 1
-# plt.xlabel("Similarity score")
-# plt.ylabel("Number of results")
+barData = np.zeros(50)
+for stat in unique_stats:
+	barData[int(stat[6] * len(barData))] += 1
+plt.xlabel("Similarity score")
+plt.ylabel("Number of results")
 
-# plt.bar(np.linspace(0, 1, len(barData)), barData, width=1/len(barData), align='edge')
+plt.bar(np.linspace(0, 1, len(barData)), barData, width=1/len(barData), align='edge')
 # plt.savefig(inputFile + ".png")
-# plt.show()
+plt.show()
 
 
 contexts = list(set( [stat[1] for stat in unique_stats] ))

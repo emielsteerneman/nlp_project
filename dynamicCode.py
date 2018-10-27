@@ -96,7 +96,7 @@ def changeContext(word_vectors, dependency_parser, wnl, input, cIn, cOut):
 						pass
 
 					# Only convert words if it has one of the following labels
-					if label in ["NN", "NNP", "VB", "VBG", "VBN", "VBP"]:
+					if label in ["NN", "VB"]:
 						# Check if word has been converted before
 						wordT = lookup.get(lemma)
 						# If not, convert it
